@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -8,12 +7,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
     use HasApiTokens;
-    use HasFactory;
+    //use HasFactory;
+    use SoftDeletes;
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -23,6 +25,12 @@ class User extends Authenticatable
      *
      * @var string[]
      */
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
     protected $fillable = [
         'name',
         'email',
@@ -58,4 +66,18 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function apppointment(){
+        return $this->hasMany('app\Models\Operational\Appointment.php', 'user_id');
+    }
+
+    public function detail_user(){
+        return $this->hasOne('app\Models\ManagementAccess\DetailUser.php', 'user_id');
+    }
+
+    public function role_user(){
+        return $this->hasMany('app\Models\ManagementAccess\RoleUser.php', 'user_id');
+    }
+
+    
 }
